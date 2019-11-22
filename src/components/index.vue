@@ -8,7 +8,7 @@
         </div>
         <ul class="nav_ul" id="nav_ul1">
           <li>
-            <i class="layui-icon layui-icon-spread-left"></i>
+            <i class="layui-icon" :class="[flexible? 'layui-icon-spread-left' :'layui-icon-shrink-right']" @click="sidebar()"></i>
           </li>
           <li>
             <i class="layui-icon layui-icon-website"></i>
@@ -49,16 +49,22 @@ export default {
   components: {},
   data() {
     return {
-      input:''
+      input:'',
+      flexible:true
     };
   },
   computed: {},
-  methods: {},
+  methods: {
+    sidebar(){
+      console.log(this.flexible)
+      this.flexible=!this.flexible
+    }
+  },
   created() {},
   mounted() {}
 };
 $(function() {
-  function Movein(a, b,c,d) {
+  function Movein(a,b,c,d) {
     $(a).css({
       left: $(b).position().left + d,
       width: $(b).innerWidth()+c,
@@ -79,6 +85,7 @@ $(function() {
       opacity: 0
     });
   }
+  // 导航流动
   $("#nav_ul1 li").hover(function() {
     let d= parseInt($(this).css("marginLeft"))
     Movein("#layui-nav-bar1", this,0,d);
@@ -109,6 +116,7 @@ $(function() {
   background-color: #009688;
   display: flex;
   justify-content: space-between;
+  transition: all 0.3s;
 }
 .nav_left > .nav_logo {
   width: 220px;
