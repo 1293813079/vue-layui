@@ -5,7 +5,9 @@
       <div class="nav_left">
         <div class="nav_logo" :class="[flexible? '' :'nav_logo1']">
           <span v-if="flexible">layuiAdmin</span>
-          <i class="el-icon-s-grid" v-else @click="home()"></i>
+          <el-tooltip class="item" content="首页" placement="bottom" v-if="!flexible">
+            <i class="el-icon-s-grid" @click="home()"></i>
+          </el-tooltip>
         </div>
         <ul class="nav_ul" id="nav_ul1">
           <li>
@@ -38,11 +40,10 @@
           <li v-if="timer">
             <i class="layui-icon layui-icon-note"></i>
           </li>
-          <li v-if="timer">
+          <li v-if="timer" @click="screen()">
             <i
               class="layui-icon"
               :class="[fullscreen? 'layui-icon-screen-restore' :'layui-icon-screen-full']"
-              @click="screen()"
             ></i>
           </li>
           <li class="personal">
@@ -51,11 +52,11 @@
             <div class="personal_ul">
               <div>基本信息</div>
               <div>修改密码</div>
-              <hr>
+              <hr />
               <div>退出</div>
             </div>
           </li>
-          <li>
+          <li @click="vertical=!vertical">
             <i class="layui-icon layui-icon-more-vertical"></i>
           </li>
           <span class="layui-nav-bar" id="layui-nav-bar2"></span>
@@ -63,6 +64,40 @@
       </div>
     </div>
     <!-- 头部导航 end-->
+
+    <!-- 主体内容 -->
+    <div class="container">
+      <!-- 右边栏 -->
+      <div class="vertical_ui" :class="[vertical? 'vertical_ui1' :'vertical_ui2']" v-if="vertical">
+        <div>
+          <div class="vertical_ui_top">版本信息</div>
+          <div class="vertical_ui_box">
+            <p>
+              当前版本：Amin
+              <em>-1.0.0</em>
+            </p>
+            <p>
+              基于框架：Vue
+              <em>^2.5.2</em>
+            </p>
+            <div class="vertical_ui_box_btn">
+              <button target="_blank" class="layui-btn layui-btn-danger" @click="grant('已授权')">获取授权</button>
+              <button target="_blank" class="layui-btn" @click="grant('已是最新版')">下载新版</button>
+            </div>
+          </div>
+          <div class="vertical_ui_top">关于版权</div>
+          <div class="vertical_ui_box">
+            <p>
+              © 2019
+              <em>admin.com</em> 版权所有
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- 右边栏 end-->
+    </div>
+    <!-- 主体内容 end-->
+    <div class="layer" v-if="vertical" @click="vertical=!vertical"></div>
   </div>
 </template>
 <script>
@@ -71,11 +106,14 @@ export default {
   components: {},
   data() {
     return {
+      // 导航栏
       input: "",
       flexible: true,
       fullscreen: false,
+      vertical: false,
       screenWidth: document.body.clientWidth, // 屏幕宽度
       timer: true
+      // 导航栏 end
     };
   },
   computed: {},
@@ -112,6 +150,14 @@ export default {
         }
       }
       this.fullscreen = !this.fullscreen;
+    },
+
+    grant(a) {
+      layui.use(["laypage", "layer"], function() {
+        let laypage = layui.laypage,
+            layer = layui.layer;
+            layer.msg(a, { icon: 1 });
+      });
     }
   },
   created() {},
@@ -185,6 +231,7 @@ $(function() {
 <style scoped>
 .app {
   width: 100%;
+  height: 100%;
 }
 .nav {
   width: 100%;
@@ -301,5 +348,90 @@ $(function() {
     transform: translate3d(0, 0, 0);
     opacity: 1;
   }
+}
+
+.vertical_ui {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  height: calc(100% - 50px);
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 1px 1px 50px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  overflow-y: auto;
+}
+.vertical_ui1 {
+  animation-name: vertical_ui;
+}
+.vertical_ui2 {
+  animation-name: vertical_ui1;
+}
+.vertical_ui_top {
+  text-align: left;
+  height: 42px;
+  line-height: 42px;
+  border-bottom: 2px solid #f6f6f6;
+  color: #333;
+  border-radius: 2px 2px 0 0;
+  font-size: 14px;
+  padding: 0 15px;
+}
+.vertical_ui_box {
+  line-height: 22px;
+  font-size: 14px;
+  color: #666;
+  padding: 10px 15px;
+}
+.vertical_ui_box > p {
+  margin-bottom: 10px;
+}
+.vertical_ui_box > p > em {
+  font-size: 12px;
+}
+@keyframes vertical_ui {
+  from {
+    transform: translate3d(300px, 0, 0);
+    opacity: 0.3;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+@keyframes vertical_ui1 {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translate3d(300px, 0, 0);
+    opacity: 0.3;
+  }
+}
+/* 遮挡层 */
+.layer {
+  position: fixed;
+  pointer-events: auto;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 98;
+  background-color: rgb(0, 0, 0);
+  opacity: 0.1;
+}
+/* 主体 */
+.container {
+  width: 100%;
+  height: calc(100% - 50px);
+  overflow: hidden;
 }
 </style>

@@ -15,7 +15,10 @@ export default {
   font-family: 'AlibabaSans-light-Italics';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
+  width: 100%;
+  height: 100%;
+  overflow-y:hidden;
+  overflow-x:hidden;
 }
 </style>
