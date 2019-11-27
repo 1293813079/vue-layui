@@ -10,11 +10,10 @@
           </el-tooltip>
         </div>
         <ul class="nav_ul" id="nav_ul1">
-          <li>
+          <li @click="sidebar()">
             <i
               class="layui-icon"
               :class="[flexible? 'layui-icon-shrink-right' :'layui-icon-spread-left']"
-              @click="sidebar()"
             ></i>
           </li>
           <li v-if="timer">
@@ -33,6 +32,7 @@
         <ul class="nav_ul" id="nav_ul2">
           <li>
             <i class="layui-icon layui-icon-notice"></i>
+            <span class="layui-badge-dot"></span>
           </li>
           <li v-if="timer">
             <i class="layui-icon layui-icon-theme"></i>
@@ -67,9 +67,57 @@
 
     <!-- 主体内容 -->
     <div class="container">
+      <!-- 左边栏 -->
+      <div class="leftsidebar" :class="[flexible? '' :'nav_logo1']">
+        <ul class="leftsidebar_ul">
+          <li v-for="(item,index) in three" :key="index">
+            <!-- 一层 -->
+            <div
+              class="leftsidebar_ul_One"
+              @click="Open(index)"
+              :class="three_index_s==index ? 'Selection':''"
+            >
+              <i class="layui-icon" :class="item.icon"></i>
+              <em>{{item.title}}</em>
+              <span
+                class="layui-nav-more"
+                v-if="item.children"
+                :class="three_index==index? 'layui-nav-more-s':''"
+              ></span>
+            </div>
+            <!-- 二层 -->
+            <dl class="leftsidebar_ul_Two" v-if="item.children && three_index==index">
+              <dd v-for="(item_two,index_two) in item.children" :key="index_two">
+                <p
+                  @click="Open_two(index_two,index)"
+                  :class="three_indextwo_s==index+'-'+index_two ? 'Selection':''"
+                >
+                  <em>{{item_two.title}}</em>
+                  <span
+                    v-if="item_two.children"
+                    :class="three_indextwo==index+'-'+index_two? 'layui-nav-more-s':''"
+                  ></span>
+                </p>
+                <!-- 三层 -->
+                <dl
+                  class="leftsidebar_ul_Three"
+                  v-if="item_two.children && three_indextwo==index+'-'+index_two"
+                >
+                  <dd
+                    v-for="(item_three,index_three) in item_two.children"
+                    :key="index_three"
+                  >{{item_three.title}}</dd>
+                </dl>
+              </dd>
+            </dl>
+          </li>
+          <span id="layui-nav-bar3"></span>
+        </ul>
+      </div>
+      <!-- 左边栏 end-->
       <!-- 右边栏 -->
       <div class="vertical_ui" :class="[vertical? 'vertical_ui1' :'vertical_ui2']" v-if="vertical">
-        <div>
+        <div v-if="timer">
           <div class="vertical_ui_top">版本信息</div>
           <div class="vertical_ui_box">
             <p>
@@ -93,6 +141,18 @@
             </p>
           </div>
         </div>
+
+        <div class="vertical_timer" v-else>
+          <div class="vertical_ui_top">
+            <i class="layui-icon layui-icon-about"></i>获得产品
+          </div>
+          <div class="vertical_ui_top">
+            <i class="layui-icon layui-icon-theme"></i>设置主题
+          </div>
+          <div class="vertical_ui_top">
+            <i class="layui-icon layui-icon-note"></i>本地便签
+          </div>
+        </div>
       </div>
       <!-- 右边栏 end-->
     </div>
@@ -112,8 +172,53 @@ export default {
       fullscreen: false,
       vertical: false,
       screenWidth: document.body.clientWidth, // 屏幕宽度
-      timer: true
+      timer: true,
       // 导航栏 end
+      // 侧边栏
+      three_index: 0,
+      three_index_s: null,
+      three_indextwo: null,
+      three_indextwo_s: 0,
+      three: [
+        {
+          title: "首页",
+          url: "",
+          icon: "layui-icon-home",
+          children: [
+            {
+              title: "控制台",
+              url: ""
+            },
+            {
+              title: "主页1",
+              url: ""
+            }
+          ]
+        },
+        {
+          title: "组件",
+          url: "",
+          icon: "layui-icon-component",
+          children: [
+            {
+              title: "栅格",
+              url: "",
+              children: [
+                {
+                  title: "等比例列表排列",
+                  url: ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          title: "授权",
+          url: "",
+          icon: "layui-icon-auz"
+        }
+      ]
+      // 侧边栏 end
     };
   },
   computed: {},
@@ -152,12 +257,42 @@ export default {
       this.fullscreen = !this.fullscreen;
     },
 
+    // 弹框
     grant(a) {
       layui.use(["laypage", "layer"], function() {
         let laypage = layui.laypage,
-            layer = layui.layer;
-            layer.msg(a, { icon: 1 });
+          layer = layui.layer;
+        layer.msg(a, { icon: 1 });
       });
+    },
+    // 侧边栏
+    Open(val) {
+      let a = this.three_index;
+      if (val != a && val != this.three_index_s) {
+        this.three_index = val;
+      }
+      if (val == a) {
+        this.three_index = null;
+      }
+      if (this.three[val].children == undefined) {
+        this.three_index_s = val;
+        this.three_indextwo_s = null;
+      }
+    },
+    Open_two(val,index) {
+      let a = this.three_indextwo;
+      let vals=index+'-'+val
+      if (vals != a && vals != this.three_indextwo_s) {
+        this.three_indextwo = vals;
+      }
+      if (vals == a) {
+        this.three_indextwo = null;
+      }
+      if (this.three[this.three_index].children[val].children == undefined) {
+        this.three_indextwo_s = vals;
+        this.three_index_s = null;
+      }
+      console.log(vals);
     }
   },
   created() {},
@@ -226,6 +361,31 @@ $(function() {
   $("#nav_ul2").mouseleave(function() {
     Moveout("#layui-nav-bar2", this);
   });
+  // 侧边栏
+  $(".leftsidebar_ul li").hover(
+    function() {
+      $("#layui-nav-bar3").css({
+        top: $(this)
+          .find(".leftsidebar_ul_One")
+          .position().top,
+        height: $(this)
+          .find(".leftsidebar_ul_One")
+          .innerHeight(),
+        opacity: 1
+      });
+    },
+    function() {
+      let cur_width = $(this)
+        .find("li .leftsidebar_ul_One")
+        .innerHeight();
+      $("#layui-nav-bar3").css({
+        height: 0,
+        paddingTop: cur_width / 2,
+        paddingBotton: cur_width / 2,
+        opacity: 0
+      });
+    }
+  );
 });
 </script>
 <style scoped>
@@ -236,7 +396,6 @@ $(function() {
 .nav {
   width: 100%;
   height: 50px;
-  border-bottom: 1px solid #f6f6f6;
   box-sizing: border-box;
   background-color: #009688;
   display: -webkit-box;
@@ -259,8 +418,8 @@ $(function() {
   line-height: 49px;
   float: left;
 }
-.nav_left > .nav_logo1 {
-  width: 60px;
+.nav_logo1 {
+  width: 60px !important;
 }
 .nav_ul {
   display: inline-block;
@@ -416,6 +575,11 @@ $(function() {
     opacity: 0.3;
   }
 }
+.layui-badge-dot {
+  position: absolute;
+  top: 50%;
+  margin: -10px 10px 0;
+}
 /* 遮挡层 */
 .layer {
   position: fixed;
@@ -433,5 +597,139 @@ $(function() {
   width: 100%;
   height: calc(100% - 50px);
   overflow: hidden;
+}
+
+/* 左边栏 */
+.Selection {
+  color: #fff;
+  background: #009688;
+}
+.Selection > i {
+  color: #fff !important;
+}
+.leftsidebar {
+  background-color: #20222a;
+  width: 220px;
+  height: 100%;
+  transition: all 0.3s;
+  overflow-y: auto;
+}
+.vertical_timer > .vertical_ui_top:hover {
+  background: #f2f2f2;
+}
+.vertical_timer > .vertical_ui_top {
+  font-size: 16px;
+  padding: 5px;
+  cursor: pointer;
+}
+.vertical_timer > div > i {
+  margin: 0 10px;
+  font-size: 20px;
+}
+.leftsidebar_ul {
+  width: 100%;
+  user-select: none;
+  position: relative;
+}
+.leftsidebar_ul > li {
+  line-height: 25px;
+  background: #28333e;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.leftsidebar_ul_One:hover em,
+.leftsidebar_ul_One:hover i {
+  color: #fff;
+}
+.leftsidebar_ul_One:hover .layui-nav-more,
+.leftsidebar_ul_Two > dd > p:hover > span {
+  border-top-color: rgba(255, 255, 255, 0.993);
+}
+.layui-nav-more-s {
+  transform: rotate(-180deg);
+  margin-top: 6px !important;
+}
+.leftsidebar_ul_One {
+  padding: 15px;
+}
+.leftsidebar_ul_One > i {
+  display: inline-block;
+  width: 30px;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.leftsidebar_ul_One > span,
+.leftsidebar_ul_Two > dd > p > span {
+  content: "";
+  width: 0;
+  height: 0;
+  border-style: solid dashed dashed;
+  border-color: #fff transparent transparent;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-transition: all 0.2s;
+  float: right;
+  border-width: 6px;
+  border-top-color: rgba(255, 255, 255, 0.7);
+  margin-top: 12px;
+}
+#layui-nav-bar3 {
+  position: absolute;
+  width: 5px;
+  left: 0;
+  background-color: #009688;
+  transition: all 0.2s;
+}
+/* 二级 */
+.leftsidebar_ul_Two {
+  padding: 5px 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.leftsidebar_ul_Two > dd > p{
+  line-height: 40px;
+  padding-left: 45px;
+  padding-right: 30px;
+}
+.leftsidebar_ul_Two > dd > .leftsidebar_ul_Three > dd {
+  line-height: 40px;
+  padding-left: 55px;
+  padding-right: 40px;
+}
+.leftsidebar_ul_Two > dd > p:hover em {
+  color: #fff;
+}
+
+.leftsidebar_ul_Two > dd > p > span {
+  margin-top: 18px;
+}
+.leftsidebar_ul_Three {
+  padding: 5px 0;
+}
+.leftsidebar_ul_Three > dd {
+  padding: 0 10px;
+}
+.leftsidebar_ul_Three > dd:hover {
+  color: #fff;
+}
+*::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 4px;
+}
+*::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+*::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
 }
 </style>
