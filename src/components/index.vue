@@ -5,9 +5,7 @@
       <div class="nav_left">
         <div class="nav_logo" :class="[flexible? '' :'nav_logo1']">
           <span v-if="flexible">layuiAdmin</span>
-          <el-tooltip class="item" content="首页" placement="bottom" v-if="!flexible">
-            <i class="el-icon-s-grid" @click="home()"></i>
-          </el-tooltip>
+          <i class="el-icon-s-grid" @click="home()" v-if="!flexible"></i>
         </div>
         <ul class="nav_ul" id="nav_ul1">
           <li @click="sidebar()">
@@ -16,7 +14,7 @@
               :class="[flexible? 'layui-icon-shrink-right' :'layui-icon-spread-left']"
             ></i>
           </li>
-          <li v-if="timer">
+          <li v-if="timer" @click="webs('https://github.com/1293813079/vue-layui')">
             <i class="layui-icon layui-icon-website"></i>
           </li>
           <li>
@@ -75,7 +73,7 @@
             <div
               class="leftsidebar_ul_One"
               @click="Open(index)"
-              :class="three_index_s==index ? 'Selection':''"
+              :class="three_index_s==index ? 'Selection':three_index==index?'Selection2':''"
               v-if="flexible"
             >
               <i class="layui-icon" :class="item.icon"></i>
@@ -131,7 +129,7 @@
       </div>
       <!-- 左边栏 end-->
       <!-- 路由 -->
-      <div  :class="[flexible? 'ner' :'ner1']"> 
+      <div :class="[flexible? 'ner' :'ner1']">
         <router-view></router-view>
       </div>
       <!-- 路由 end -->
@@ -200,7 +198,7 @@ export default {
       three_index: 0,
       three_index_s: null,
       three_indextwo: null,
-      three_indextwo_s: 0,
+      three_indextwo_s: '0-0',
       three_indexthree: null,
       three: [
         {
@@ -280,6 +278,9 @@ export default {
   },
   computed: {},
   methods: {
+    webs(val){
+      window.location.href=val
+    },
     sidebar() {
       this.flexible = !this.flexible;
       if (this.screenWidth < 768) {
@@ -287,7 +288,7 @@ export default {
       }
     },
     home() {
-      this.$router.push({ path: "/index" });
+      this.$router.push({ path: "index" });
     },
     // 全屏功能
     screen() {
@@ -332,10 +333,16 @@ export default {
         this.three_index = val;
         if (this.three[val].children != undefined) {
           this.flexible = !this.flexible;
+          if (this.screenWidth < 768) {
+            this.flexibles = !this.flexibles;
+          }
         }
       }
       if (val == a) {
         this.flexible = !this.flexible;
+        if (this.screenWidth < 768) {
+          this.flexibles = !this.flexibles;
+        }
       }
       if (this.three[val].children == undefined) {
         this.three_index_s = val;
@@ -700,6 +707,18 @@ $(function() {
 .Selection1 {
   background: rgba(0, 0, 0, 0.3);
 }
+.Selection2{
+  color: #fff;
+}
+.Selection2>i{
+  color: #fff !important;
+}
+.Selection1>i{
+  color: #fff !important;
+}
+.Selection2>span{
+  border-top-color:rgba(255, 255, 255, 1) !important;
+}
 .Selectiontwo {
   color: #fff;
 }
@@ -746,9 +765,10 @@ $(function() {
 }
 .leftsidebar_ul_One:hover .layui-nav-more,
 .leftsidebar_ul_Two > dd > p:hover > span {
-  border-top-color: rgba(255, 255, 255, 0.993);
+  border-top-color: rgba(255, 255, 255, 1) !important;
 }
 .layui-nav-more-s {
+  border-top-color: rgba(255, 255, 255, 1) !important;
   transform: rotate(-180deg);
   margin-top: 6px !important;
 }
@@ -833,18 +853,16 @@ $(function() {
   color: #fff;
 }
 
-
-.ner{
+.ner {
   width: calc(100% - 220px);
   height: 100%;
   overflow-y: auto;
 }
-.ner1{
+.ner1 {
   width: calc(100% - 60px);
   height: 100%;
   overflow-y: auto;
 }
-
 
 *::-webkit-scrollbar {
   /*滚动条整体样式*/
@@ -854,12 +872,12 @@ $(function() {
 *::-webkit-scrollbar-thumb {
   /*滚动条里面小方块*/
   border-radius: 5px;
-  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   background: rgba(0, 0, 0, 0.2);
 }
 *::-webkit-scrollbar-track {
   /*滚动条里面轨道*/
-  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   border-radius: 0;
   background: rgba(0, 0, 0, 0.1);
 }
