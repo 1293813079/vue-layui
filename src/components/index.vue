@@ -72,7 +72,7 @@
             <!-- 一层 -->
             <div
               class="leftsidebar_ul_One"
-              @click="Open(index)"
+              @click="Open(index,item.url)"
               :class="three_index_s==index ? 'Selection':three_index==index?'Selection2':''"
               v-if="flexible"
             >
@@ -88,7 +88,7 @@
             <el-tooltip class="item" :content="item.title" placement="right" v-else>
               <div
                 class="leftsidebar_ul_One"
-                @click="shrink(index)"
+                @click="shrink(index,item.url)"
                 :class="three_index_s==index ? 'Selection':three_index==index?'Selection1':''"
               >
                 <i class="layui-icon" :class="item.icon"></i>
@@ -99,7 +99,7 @@
               <dl class="leftsidebar_ul_Two" v-if="item.children && three_index==index">
                 <dd v-for="(item_two,index_two) in item.children" :key="index_two">
                   <p
-                    @click="Open_two(index_two,index)"
+                    @click="Open_two(index_two,index,item_two.url)"
                     :class="three_indextwo==index+'-'+index_two&&item_two.children ? 'Selectiontwo':three_indextwo_s==index+'-'+index_two?'Selection':''"
                   >
                     <em>{{item_two.title}}</em>
@@ -116,7 +116,7 @@
                     <dd
                       v-for="(item_three,index_three) in item_two.children"
                       :key="index_three"
-                      @click="Open_Three(index+'-'+index_two+'-'+index_three)"
+                      @click="Open_Three(index+'-'+index_two+'-'+index_three,item_three.url)"
                       :class="three_indexthree==index+'-'+index_two+'-'+index_three? 'Selection':''"
                     >{{item_three.title}}</dd>
                   </dl>
@@ -130,7 +130,9 @@
       <!-- 左边栏 end-->
       <!-- 路由 -->
       <div :class="[flexible? 'ner' :'ner1']">
+        <transition name="transitionRouter" mode="out-in">
         <router-view></router-view>
+        </transition>
       </div>
       <!-- 路由 end -->
       <!-- 右边栏 -->
@@ -176,7 +178,7 @@
     </div>
     <!-- 主体内容 end-->
     <div class="layer" v-if="vertical" @click="vertical=!vertical"></div>
-    <div class="layer" v-if="flexibles" @click="flexibles=!flexibles,flexible=!flexible"></div>
+    <div class="layer layer1" v-if="flexibles" @click="flexibles=!flexibles,flexible=!flexible"></div>
   </div>
 </template>
 <script>
@@ -198,12 +200,11 @@ export default {
       three_index: 0,
       three_index_s: null,
       three_indextwo: null,
-      three_indextwo_s: '0-0',
+      three_indextwo_s: "0-0",
       three_indexthree: null,
       three: [
         {
           title: "首页",
-          url: "",
           icon: "layui-icon-home",
           children: [
             {
@@ -222,7 +223,6 @@ export default {
         },
         {
           title: "组件",
-          url: "",
           icon: "layui-icon-component",
           children: [
             {
@@ -259,6 +259,10 @@ export default {
             {
               title: "个人主页",
               url: ""
+            },
+            {
+              title: "404",
+              url: "404"
             }
           ]
         },
@@ -278,8 +282,8 @@ export default {
   },
   computed: {},
   methods: {
-    webs(val){
-      window.location.href=val
+    webs(val) {
+      window.location.href = val;
     },
     sidebar() {
       this.flexible = !this.flexible;
@@ -288,7 +292,12 @@ export default {
       }
     },
     home() {
-      this.$router.push({ path: "index" });
+      this.$router.push({ path: "/" });
+      this.three_index = 0;
+      this.three_index_s = null;
+      this.three_indextwo = null;
+      this.three_indextwo_s = "0-0";
+      this.three_indexthree = null;
     },
     // 全屏功能
     screen() {
@@ -327,7 +336,7 @@ export default {
       });
     },
     // 侧边栏
-    shrink(val) {
+    shrink(val,url) {
       let a = this.three_index;
       if (val != a && val != this.three_index_s) {
         this.three_index = val;
@@ -344,13 +353,16 @@ export default {
           this.flexibles = !this.flexibles;
         }
       }
-      if (this.three[val].children == undefined) {
+      if (this.three[val].children == undefined && this.three_index_s != val) {
         this.three_index_s = val;
         this.three_indextwo_s = null;
         this.three_indexthree = null;
+        this.$router.push({
+          path: url
+        });
       }
     },
-    Open(val) {
+    Open(val, url) {
       let a = this.three_index;
       if (val != a && val != this.three_index_s) {
         this.three_index = val;
@@ -358,13 +370,16 @@ export default {
       if (val == a) {
         this.three_index = null;
       }
-      if (this.three[val].children == undefined) {
+      if (this.three[val].children == undefined && this.three_index_s != val) {
         this.three_index_s = val;
         this.three_indextwo_s = null;
         this.three_indexthree = null;
+        this.$router.push({
+          path: url
+        });
       }
     },
-    Open_two(val, index) {
+    Open_two(val, index,url) {
       let a = this.three_indextwo;
       let vals = index + "-" + val;
       if (vals != a && vals != this.three_indextwo_s) {
@@ -373,23 +388,44 @@ export default {
       if (vals == a) {
         this.three_indextwo = null;
       }
-      if (this.three[this.three_index].children[val].children == undefined) {
+      if (
+        this.three[this.three_index].children[val].children == undefined &&
+        this.three_indextwo_s != vals
+      ) {
         this.three_indextwo_s = vals;
         this.three_index_s = null;
         this.three_indexthree = null;
+        this.$router.push({
+          path: url
+        });
       }
     },
-    Open_Three(val) {
+    Open_Three(val,url) {
       let a = this.three_indexthree;
-      if (val != a) {
+      if (val != a && this.three_indexthree != val) {
         this.three_indexthree = val;
         this.three_index_s = null;
         this.three_indextwo_s = null;
+        this.$router.push({
+          path: url
+        });
       }
     }
   },
   created() {},
   mounted() {
+    if (this.screenWidth < 768) {
+      this.flexible = false;
+      this.flexibles = false;
+      this.timer = false;
+    }
+    if (this.screenWidth > 768) {
+      this.timer = true;
+    }
+    if (this.screenWidth < 985) {
+      this.flexible = false;
+      this.flexibles = false;
+    }
     window.onresize = () => {
       return (() => {
         this.screenWidth = document.body.clientWidth;
@@ -407,18 +443,10 @@ export default {
         }
       })();
     };
-    if (this.screenWidth < 768) {
-      this.flexible = false;
-      this.flexibles = false;
-      this.timer = false;
-    }
-    if (this.screenWidth > 768) {
-      this.timer = true;
-    }
-    if (this.screenWidth < 985) {
-      this.flexible = false;
-      this.flexibles = false;
-    }
+    let a=this.$route.path;
+        a=a.split('/index/')
+        a=a[1]
+        console.log(a)
   }
 };
 $(function() {
@@ -687,9 +715,12 @@ $(function() {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 98;
+  z-index: 998;
   background-color: rgb(0, 0, 0);
   opacity: 0.1;
+}
+.layer1{
+  z-index: 98 !important;
 }
 /* 主体 */
 .container {
@@ -707,17 +738,17 @@ $(function() {
 .Selection1 {
   background: rgba(0, 0, 0, 0.3);
 }
-.Selection2{
+.Selection2 {
   color: #fff;
 }
-.Selection2>i{
+.Selection2 > i {
   color: #fff !important;
 }
-.Selection1>i{
+.Selection1 > i {
   color: #fff !important;
 }
-.Selection2>span{
-  border-top-color:rgba(255, 255, 255, 1) !important;
+.Selection2 > span {
+  border-top-color: rgba(255, 255, 255, 1) !important;
 }
 .Selectiontwo {
   color: #fff;
@@ -731,7 +762,7 @@ $(function() {
   height: 100%;
   transition: all 0.3s;
   overflow-y: auto;
-  z-index: 999;
+  z-index: 99;
   position: relative;
 }
 .vertical_timer > .vertical_ui_top:hover {
@@ -880,5 +911,11 @@ $(function() {
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
   border-radius: 0;
   background: rgba(0, 0, 0, 0.1);
+}
+
+.transitionRouter-enter-active, .transitionRouter-leave-active {
+    transition: all .3s;
+} .transitionRouter-enter, .transitionRouter-leave{
+    transform: translate3d(100%, 0, 0);
 }
 </style>

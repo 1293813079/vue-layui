@@ -10,7 +10,18 @@ export default new Router({
     },
     {
       path:'/index',
-      component:()=>import('../components/index.vue')
+      component:()=>import('../components/index.vue'),
+      children:[
+        {
+          path:'404',
+          name:'404',
+          component:()=>import('../components/common/404.vue')
+        }
+      ]
+    },
+    {
+      path:'*',
+      redirect:'/index/404'
     }
   ]
 })
