@@ -160,8 +160,8 @@ export default {
     align-items: center;
   }
   svg {
-    width: 300px;
-    height: 420px;
+    width: 452px;
+    height: 585px;
     margin-right: 40px;
   }
   .message-box {
@@ -169,11 +169,11 @@ export default {
     font-weight: 500;
   }
   .message-box > h1 {
-    font-size: 80px;
+    font-size: 98px;
   }
   .message-box > p {
-    font-size: 20px;
-    padding: 30px 0;
+    font-size: 22px;
+    padding: 35px 0;
     font-weight: 300;
   }
 }

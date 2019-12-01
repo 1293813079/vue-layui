@@ -131,7 +131,7 @@
       <!-- 路由 -->
       <div :class="[flexible? 'ner' :'ner1']">
         <transition name="transitionRouter" mode="out-in">
-        <router-view></router-view>
+          <router-view></router-view>
         </transition>
       </div>
       <!-- 路由 end -->
@@ -209,7 +209,7 @@ export default {
           children: [
             {
               title: "控制台",
-              url: ""
+              url: "control"
             },
             {
               title: "主页1",
@@ -253,7 +253,6 @@ export default {
         },
         {
           title: "页面",
-          url: "",
           icon: "layui-icon-template",
           children: [
             {
@@ -336,7 +335,7 @@ export default {
       });
     },
     // 侧边栏
-    shrink(val,url) {
+    shrink(val, url) {
       let a = this.three_index;
       if (val != a && val != this.three_index_s) {
         this.three_index = val;
@@ -379,7 +378,7 @@ export default {
         });
       }
     },
-    Open_two(val, index,url) {
+    Open_two(val, index, url) {
       let a = this.three_indextwo;
       let vals = index + "-" + val;
       if (vals != a && vals != this.three_indextwo_s) {
@@ -396,11 +395,11 @@ export default {
         this.three_index_s = null;
         this.three_indexthree = null;
         this.$router.push({
-          path: url
+          path: url,
         });
       }
     },
-    Open_Three(val,url) {
+    Open_Three(val, url) {
       let a = this.three_indexthree;
       if (val != a && this.three_indexthree != val) {
         this.three_indexthree = val;
@@ -443,10 +442,55 @@ export default {
         }
       })();
     };
-    let a=this.$route.path;
-        a=a.split('/index/')
-        a=a[1]
-        console.log(a)
+    // 进入页面 左侧栏
+    let url = this.$route.path;
+    url = url.split("/index/");
+    url = url[1];
+
+    let one = null,
+        two = null,
+        three = null;
+    this.three.forEach((val, key) => {
+      if (val.url == url) {
+        one = key;
+        this.three_index = null;
+        this.three_index_s=key;
+        this.three_indextwo=null;
+        this.three_indextwo_s=null;
+        this.three_indexthree=null;
+        return false;
+      }
+      if (val.children != undefined) {
+        val.children.forEach((val1, key1) => {
+          if (val1.url == url) {
+            one = key;
+            two = key1;
+            this.three_index = key;
+            this.three_index_s=null;
+            this.three_indextwo=null;
+            this.three_indextwo_s=key+'-'+key1;
+            this.three_indexthree=null;
+            return false;
+          }
+          if (val1.children != undefined) {
+            val1.children.forEach((val2, key2) => {
+              if (val2.url == url) {
+                one = key;
+                two = key1;
+                three = key2;
+                this.three_index = key;
+                this.three_index_s=null;
+                this.three_indextwo=key+'-'+key1;
+                this.three_indextwo_s=null;
+                this.three_indexthree=key+'-'+key1+'-'+key2;
+                return false;
+              }
+            });
+          }
+        });
+      }
+    });
+    // 进入页面 左侧栏 end
   }
 };
 $(function() {
@@ -719,7 +763,7 @@ $(function() {
   background-color: rgb(0, 0, 0);
   opacity: 0.1;
 }
-.layer1{
+.layer1 {
   z-index: 98 !important;
 }
 /* 主体 */
@@ -913,9 +957,12 @@ $(function() {
   background: rgba(0, 0, 0, 0.1);
 }
 
-.transitionRouter-enter-active, .transitionRouter-leave-active {
-    transition: all .3s;
-} .transitionRouter-enter, .transitionRouter-leave{
-    transform: translate3d(100%, 0, 0);
+.transitionRouter-enter-active,
+.transitionRouter-leave-active {
+  transition: all 0.3s;
+}
+.transitionRouter-enter,
+.transitionRouter-leave {
+  transform: translate3d(100%, 0, 0);
 }
 </style>

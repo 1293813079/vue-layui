@@ -16,7 +16,12 @@ export default new Router({
           path:'404',
           name:'404',
           component:()=>import('../components/common/404.vue')
-        }
+        },
+        {
+          path:'control',
+          name:'control',
+          component:()=>import('../components/home/control.vue')
+        },
       ]
     },
     {
