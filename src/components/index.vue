@@ -771,7 +771,7 @@ $(function() {
   width: 100%;
   height: calc(100% - 50px);
   overflow: hidden;
-  display: flex;
+  display: -webkit-box;
 }
 
 /* 左边栏 */
@@ -930,15 +930,18 @@ $(function() {
 
 .ner {
   width: calc(100% - 220px);
+  min-width:375px;
   height: 100%;
   overflow-y: auto;
+  background: #f2f2f2;
 }
 .ner1 {
   width: calc(100% - 60px);
+  min-width:375px;
   height: 100%;
   overflow-y: auto;
+  background: #f2f2f2;
 }
-
 *::-webkit-scrollbar {
   /*滚动条整体样式*/
   width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
@@ -964,5 +967,16 @@ $(function() {
 .transitionRouter-enter,
 .transitionRouter-leave {
   transform: translate3d(100%, 0, 0);
+}
+@media screen and (max-width: 725px){
+  .nav_logo1{
+    width: 0px !important;
+  }
+  .ner1{
+    width: 100%;
+  }
+  .nav_left > .nav_logo{
+    padding: 0;
+  }
 }
 </style>

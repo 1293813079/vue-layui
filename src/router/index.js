@@ -11,16 +11,17 @@ export default new Router({
     {
       path:'/index',
       component:()=>import('../components/index.vue'),
+      redirect:'/index/control',
       children:[
-        {
-          path:'404',
-          name:'404',
-          component:()=>import('../components/common/404.vue')
-        },
         {
           path:'control',
           name:'control',
           component:()=>import('../components/home/control.vue')
+        },
+        {
+          path:'404',
+          name:'404',
+          component:()=>import('../components/common/404.vue')
         },
       ]
     },
