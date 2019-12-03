@@ -17,7 +17,7 @@
           <li v-if="timer" @click="webs('https://github.com/1293813079/vue-layui')">
             <i class="layui-icon layui-icon-website"></i>
           </li>
-          <li>
+          <li @click="refreshView()" :class="showView?'':'icon-animation'">
             <i class="layui-icon layui-icon-refresh-3"></i>
           </li>
           <li v-if="timer">
@@ -131,7 +131,7 @@
       <!-- 路由 -->
       <div :class="[flexible? 'ner' :'ner1']">
         <transition name="transitionRouter" mode="out-in">
-          <router-view></router-view>
+          <router-view v-if="showView"></router-view>
         </transition>
       </div>
       <!-- 路由 end -->
@@ -194,6 +194,7 @@ export default {
       vertical: false,
       screenWidth: document.body.clientWidth, // 屏幕宽度
       timer: true,
+      showView: true,
       // 导航栏 end
       // 侧边栏
       flexibles: false,
@@ -281,6 +282,14 @@ export default {
   },
   computed: {},
   methods: {
+    refreshView() {
+      this.showView = false;
+      setTimeout(() => {
+        this.$nextTick(() => {
+          this.showView = true;
+        });
+      }, 200);
+    },
     webs(val) {
       window.location.href = val;
     },
@@ -395,7 +404,7 @@ export default {
         this.three_index_s = null;
         this.three_indexthree = null;
         this.$router.push({
-          path: url,
+          path: url
         });
       }
     },
@@ -409,6 +418,57 @@ export default {
           path: url
         });
       }
+    },
+
+    Listening(val){
+      let url = val;
+      url = url.split("/index/");
+      url = url[1];
+      // 进入页面 左侧栏 end
+      let one = null,
+        two = null,
+        three = null;
+      this.three.forEach((val, key) => {
+        if (val.url == url) {
+          one = key;
+          this.three_index = null;
+          this.three_index_s = key;
+          this.three_indextwo = null;
+          this.three_indextwo_s = null;
+          this.three_indexthree = null;
+          return false;
+        }
+        if (val.children != undefined) {
+          val.children.forEach((val1, key1) => {
+            if (val1.url == url) {
+              one = key;
+              two = key1;
+              this.three_index = key;
+              this.three_index_s = null;
+              this.three_indextwo = null;
+              this.three_indextwo_s = key + "-" + key1;
+              this.three_indexthree = null;
+              return false;
+            }
+            if (val1.children != undefined) {
+              val1.children.forEach((val2, key2) => {
+                if (val2.url == url) {
+                  one = key;
+                  two = key1;
+                  three = key2;
+                  this.three_index = key;
+                  this.three_index_s = null;
+                  this.three_indextwo = key + "-" + key1;
+                  this.three_indextwo_s = null;
+                  this.three_indexthree = key + "-" + key1 + "-" + key2;
+                  return false;
+                }
+              });
+            }
+          });
+        }
+      });
+      // 进入页面 左侧栏 end
     }
   },
   created() {},
@@ -444,53 +504,12 @@ export default {
     };
     // 进入页面 左侧栏
     let url = this.$route.path;
-    url = url.split("/index/");
-    url = url[1];
-
-    let one = null,
-        two = null,
-        three = null;
-    this.three.forEach((val, key) => {
-      if (val.url == url) {
-        one = key;
-        this.three_index = null;
-        this.three_index_s=key;
-        this.three_indextwo=null;
-        this.three_indextwo_s=null;
-        this.three_indexthree=null;
-        return false;
-      }
-      if (val.children != undefined) {
-        val.children.forEach((val1, key1) => {
-          if (val1.url == url) {
-            one = key;
-            two = key1;
-            this.three_index = key;
-            this.three_index_s=null;
-            this.three_indextwo=null;
-            this.three_indextwo_s=key+'-'+key1;
-            this.three_indexthree=null;
-            return false;
-          }
-          if (val1.children != undefined) {
-            val1.children.forEach((val2, key2) => {
-              if (val2.url == url) {
-                one = key;
-                two = key1;
-                three = key2;
-                this.three_index = key;
-                this.three_index_s=null;
-                this.three_indextwo=key+'-'+key1;
-                this.three_indextwo_s=null;
-                this.three_indexthree=key+'-'+key1+'-'+key2;
-                return false;
-              }
-            });
-          }
-        });
-      }
-    });
-    // 进入页面 左侧栏 end
+    this.Listening(url)
+  },
+  watch: {
+    $route(to, from) {
+      this.Listening(to.path)
+    }
   }
 };
 $(function() {
@@ -930,14 +949,14 @@ $(function() {
 
 .ner {
   width: calc(100% - 220px);
-  min-width:375px;
+  min-width: 375px;
   height: 100%;
   overflow-y: auto;
   background: #f2f2f2;
 }
 .ner1 {
   width: calc(100% - 60px);
-  min-width:375px;
+  min-width: 375px;
   height: 100%;
   overflow-y: auto;
   background: #f2f2f2;
@@ -968,15 +987,33 @@ $(function() {
 .transitionRouter-leave {
   transform: translate3d(100%, 0, 0);
 }
-@media screen and (max-width: 725px){
-  .nav_logo1{
+@media screen and (max-width: 725px) {
+  .nav_logo1 {
     width: 0px !important;
   }
-  .ner1{
+  .ner1 {
     width: 100%;
   }
-  .nav_left > .nav_logo{
+  .nav_left > .nav_logo {
     padding: 0;
+  }
+}
+.icon-animation {
+  animation: rotate 0.2s infinite;
+  -webkit-animation: rotate 0.2s infinite;
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+    -ms-transform: rotate(0deg); /* IE 9 */
+    -moz-transform: rotate(0deg); /* Firefox */
+    -o-transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -ms-transform: rotate(360deg); /* IE 9 */
+    -moz-transform: rotate(360deg); /* Firefox */
+    -o-transform: rotate(360deg);
   }
 }
 </style>

@@ -18,7 +18,22 @@
       <div class="layui-col-md6">
         <div class="content">
           <div class="header">待办事项</div>
-          <div class="column"></div>
+          <div class="column">
+            <div class="layui-carousel" id="To-do">
+              <div carousel-item>
+                <div class="To-do-list" v-for="(item,index) in planting" :key="index">
+                  <ul>
+                    <li class="layui-col-xs6" v-for="(items,indexs) in item.children" :key="indexs">
+                      <div>
+                        <h3>{{items.text}}</h3>
+                        <p>{{items.number}}</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="layui-col-md12">
@@ -68,15 +83,25 @@
           <div class="header">效果报告</div>
           <div class="column">
             <div class="layui-progress" lay-showPercent="true">
-              <div class="layui-progress-bar layui-bg-red" lay-percent="1/3" style="width:calc(100% / 3)"><span class="layui-progress-text">1/3</span></div>
+              <div
+                class="layui-progress-bar layui-bg-red"
+                lay-percent="1/3"
+                style="width:calc(100% / 3)"
+              >
+                <span class="layui-progress-text">1/3</span>
+              </div>
             </div>
 
             <div class="layui-progress" lay-showPercent="yes">
-              <div class="layui-progress-bar layui-bg-red" lay-percent="30%" style="width: 30%;"><span class="layui-progress-text">30%</span></div>
+              <div class="layui-progress-bar layui-bg-red" lay-percent="30%" style="width: 30%;">
+                <span class="layui-progress-text">30%</span>
+              </div>
             </div>
 
             <div class="layui-progress layui-progress-big" lay-showPercent="yes">
-              <div class="layui-progress-bar layui-bg-green" lay-percent="50%" style="width: 50%;"><span class="layui-progress-text">50%</span></div>
+              <div class="layui-progress-bar layui-bg-green" lay-percent="50%" style="width: 50%;">
+                <span class="layui-progress-text">50%</span>
+              </div>
             </div>
           </div>
         </div>
@@ -100,6 +125,36 @@
 export default {
   data() {
     return {
+      planting: [
+        {
+          children: [
+            {
+              text: "待审评论",
+              number: "66"
+            },
+            {
+              text: "待审帖子",
+              number: "15"
+            },
+            {
+              text: "待审商品",
+              number: "99+"
+            },
+            {
+              text: "待发货",
+              number: "66"
+            }
+          ]
+        },
+        {
+          children: [
+            {
+              text: "待审友情链接",
+              number: "5"
+            }
+          ]
+        }
+      ],
       Quick: [
         {
           icon: "layui-icon-console",
@@ -159,7 +214,20 @@ export default {
     }
   },
   created() {},
-  mounted() {}
+  mounted() {
+    layui.use(["carousel"], function() {
+      var carousel = layui.carousel;
+      //建造实例
+      carousel.render({
+        elem: "#To-do",
+        width: "100%", //设置容器宽度
+        arrow: "none", //始终显示箭头
+        anim: "default", //切换动画方式
+        autoplay: false,
+        trigger: "hover"
+      });
+    });
+  }
 };
 </script>
 <style scoped>
@@ -221,7 +289,65 @@ export default {
 .layui-btn + .layui-btn {
   margin-left: 0;
 }
-.layui-progress{
+.layui-progress {
   margin: 20px 0;
 }
+#To-do {
+  height: 185px !important;
+  background: #fff;
+}
+.To-do-list {
+  background: transparent;
+}
+.To-do-list ul li {
+  padding: 5px;
+}
+.To-do-list ul li >div{
+  padding: 10px 15px;
+  background: #f8f8f8;
+  border-radius: 2px;
+  cursor: pointer;
+  transition:all .2s;
+  color: #999;
+}
+.To-do-list ul li>div:hover{
+  background: #f2f2f2;
+  color: #888;
+}
+.To-do-list ul li >div h3 {
+  padding-bottom: 10px;
+  font-size: 12px;
+  font-weight: 400;
+}
+.To-do-list ul li >div p {
+  font-size: 30px;
+  color: #009688;
+  padding-bottom: 5px;
+}
 </style>
+<style>
+#To-do .layui-carousel-ind {
+  position: absolute;
+  right: 0;
+  top: -42px;
+}
+#To-do .layui-carousel-ind > ul {
+  float: right;
+  background: 0, 0;
+}
+#To-do .layui-carousel-ind li {
+  background-color: #e2e2e2;
+}
+#To-do .layui-carousel-ind li.layui-this {
+  background-color: #999;
+}
+</style>
+
+
+
+
+
+
+
+
+
