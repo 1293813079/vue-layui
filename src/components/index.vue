@@ -1,9 +1,9 @@
 <template>
   <div class="app">
     <!-- 头部导航 -->
-    <div class="nav">
+    <div class="nav" :style="{backgroundColor:scheme_color.top}">
       <div class="nav_left">
-        <div class="nav_logo" :class="[flexible? '' :'nav_logo1']">
+        <div class="nav_logo" :class="[flexible? '' :'nav_logo1']" :style="{backgroundColor:scheme_color.top_left}">
           <span v-if="flexible">layuiAdmin</span>
           <i class="el-icon-s-grid" @click="home()" v-if="!flexible"></i>
         </div>
@@ -32,7 +32,7 @@
             <i class="layui-icon layui-icon-notice"></i>
             <span class="layui-badge-dot"></span>
           </li>
-          <li v-if="timer">
+          <li v-if="timer" @click="theme_color=!theme_color">
             <i class="layui-icon layui-icon-theme"></i>
           </li>
           <li v-if="timer">
@@ -66,14 +66,15 @@
     <!-- 主体内容 -->
     <div class="container">
       <!-- 左边栏 -->
-      <div class="leftsidebar" :class="[flexible? '' :'nav_logo1']">
+      <div class="leftsidebar" :class="[flexible? '' :'nav_logo1']" :style="{backgroundColor:scheme_color.left}">
         <ul class="leftsidebar_ul">
-          <li v-for="(item,index) in three" :key="index">
+          <li v-for="(item,index) in three" :key="index" :style="{backgroundColor:scheme_color.left}">
             <!-- 一层 -->
             <div
               class="leftsidebar_ul_One"
               @click="Open(index,item.url)"
-              :class="three_index_s==index ? 'Selection':three_index==index?'Selection2':''"
+              :class="three_index_s==index ? 'Selection':three_index==index?'Selection2':''" 
+              :style="{backgroundColor:three_index_s==index ? scheme_color.top :''}"
               v-if="flexible"
             >
               <i class="layui-icon" :class="item.icon"></i>
@@ -90,6 +91,7 @@
                 class="leftsidebar_ul_One"
                 @click="shrink(index,item.url)"
                 :class="three_index_s==index ? 'Selection':three_index==index?'Selection1':''"
+                :style="{backgroundColor:three_index_s==index ? scheme_color.top :''}"
               >
                 <i class="layui-icon" :class="item.icon"></i>
               </div>
@@ -101,6 +103,7 @@
                   <p
                     @click="Open_two(index_two,index,item_two.url)"
                     :class="three_indextwo==index+'-'+index_two&&item_two.children ? 'Selectiontwo':three_indextwo_s==index+'-'+index_two?'Selection':''"
+                    :style="{backgroundColor:three_indextwo_s==index+'-'+index_two? scheme_color.top :''}"
                   >
                     <em>{{item_two.title}}</em>
                     <span
@@ -116,6 +119,7 @@
                     <dd
                       v-for="(item_three,index_three) in item_two.children"
                       :key="index_three"
+                      :style="{backgroundColor:three_indexthree==index+'-'+index_two+'-'+index_three? scheme_color.top :''}"
                       @click="Open_Three(index+'-'+index_two+'-'+index_three,item_three.url)"
                       :class="three_indexthree==index+'-'+index_two+'-'+index_three? 'Selection':''"
                     >{{item_three.title}}</dd>
@@ -124,7 +128,7 @@
               </dl>
             </transition>
           </li>
-          <span id="layui-nav-bar3"></span>
+          <span id="layui-nav-bar3"  :style="{backgroundColor:scheme_color.top}"></span>
         </ul>
       </div>
       <!-- 左边栏 end-->
@@ -166,7 +170,7 @@
           <div class="vertical_ui_top">
             <i class="layui-icon layui-icon-about"></i>获得产品
           </div>
-          <div class="vertical_ui_top">
+          <div class="vertical_ui_top" @click="theme_color=!theme_color">
             <i class="layui-icon layui-icon-theme"></i>设置主题
           </div>
           <div class="vertical_ui_top">
@@ -174,11 +178,38 @@
           </div>
         </div>
       </div>
+
+      <div
+        class="vertical_ui vertical_ui_color"
+        :class="[theme_color? 'vertical_ui1' :'vertical_ui2']"
+        v-if="theme_color"
+      >
+        <div>
+          <div class="vertical_ui_top">主题色方案</div>
+          <ul class="setTheme">
+            <li
+              v-for="(item,index) in Theme"
+              :key="index"
+              @click="Dominant(index)"
+              :class="[Theme_color==index ? 'setTheme_color' :'']"
+            >
+              <div class="setTheme_left">
+                <div :style="{backgroundColor:item.top_left}"></div>
+                <div :style="{backgroundColor:item.left}"></div>
+              </div>
+              <div class="setTheme_right">
+                <div :style="{backgroundColor:item.top}"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
       <!-- 右边栏 end-->
     </div>
     <!-- 主体内容 end-->
     <div class="layer" v-if="vertical" @click="vertical=!vertical"></div>
     <div class="layer layer1" v-if="flexibles" @click="flexibles=!flexibles,flexible=!flexible"></div>
+    <div class="layer layer2" v-if="theme_color" @click="theme_color=!theme_color"></div>
   </div>
 </template>
 <script>
@@ -195,6 +226,7 @@ export default {
       screenWidth: document.body.clientWidth, // 屏幕宽度
       timer: true,
       showView: true,
+      theme_color: false,
       // 导航栏 end
       // 侧边栏
       flexibles: false,
@@ -276,8 +308,56 @@ export default {
           url: "",
           icon: "layui-icon-auz"
         }
-      ]
+      ],
       // 侧边栏 end
+      Theme_color: 0,
+      Theme: [
+        {
+          top_left: "#009688",
+          left: "#393D49",
+          top: "#009688"
+        },
+        {
+          top_left: "#20222A",
+          left: "#28333e",
+          top: "rgb(50, 57, 68)"
+        },
+        {
+          top_left: "#A48566",
+          left: "#2E241B",
+          top: "#A48566"
+        },
+        {
+          top_left: "rgb(0, 88, 175)",
+          left: "#03152A",
+          top: "rgb(0, 88, 175)"
+        },
+        {
+          top_left: "#AA3130",
+          left: "#28333E",
+          top: "#AA3130"
+        },
+        {
+          top_left: "rgb(122, 77, 123)",
+          left: "rgb(80, 49, 79)",
+          top: "rgb(122, 77, 123)"
+        },
+        {
+          top_left: "#0c7bb3",
+          left: "#393D49",
+          top: "#0c7bb3"
+        },
+        {
+          top_left: "#F17F42",
+          left: "#393D49",
+          top: "#F17F42"
+        }
+      ],
+      scheme_color: {
+        top_left: "#009688",
+        top: "#009688",
+        left: "#28333e"
+      }
     };
   },
   computed: {},
@@ -420,7 +500,7 @@ export default {
       }
     },
 
-    Listening(val){
+    Listening(val) {
       let url = val;
       url = url.split("/index/");
       url = url[1];
@@ -469,6 +549,13 @@ export default {
         }
       });
       // 进入页面 左侧栏 end
+    },
+    // 主题色
+    Dominant(index) {
+      this.Theme_color = index;
+      this.scheme_color.top_left = this.Theme[index].top_left;
+      this.scheme_color.left = this.Theme[index].left;
+      this.scheme_color.top = this.Theme[index].top;
     }
   },
   created() {},
@@ -504,11 +591,11 @@ export default {
     };
     // 进入页面 左侧栏
     let url = this.$route.path;
-    this.Listening(url)
+    this.Listening(url);
   },
   watch: {
     $route(to, from) {
-      this.Listening(to.path)
+      this.Listening(to.path);
     }
   }
 };
@@ -705,6 +792,7 @@ $(function() {
   bottom: 0;
   width: 300px;
   height: calc(100% - 50px);
+
   background: #fff;
   border-radius: 2px;
   box-shadow: 1px 1px 50px rgba(0, 0, 0, 0.3);
@@ -784,6 +872,9 @@ $(function() {
 }
 .layer1 {
   z-index: 98 !important;
+}
+.layer2 {
+  z-index: 1000 !important;
 }
 /* 主体 */
 .container {
@@ -1015,5 +1106,88 @@ $(function() {
     -moz-transform: rotate(360deg); /* Firefox */
     -o-transform: rotate(360deg);
   }
+}
+.setTheme {
+  padding: 15px;
+  overflow-x: hidden;
+  position: relative;
+}
+.setTheme > li {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 80px;
+  height: 50px;
+  margin-bottom: 15px;
+  background-color: #f2f2f2;
+  cursor: pointer;
+  font-size: 12px;
+  color: #666;
+}
+.vertical_ui_color {
+  z-index: 1001;
+}
+.setTheme > li > .setTheme_left {
+  width: 20px;
+  height: 100%;
+  z-index: 11;
+  box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.05);
+  float: left;
+}
+.setTheme > li > .setTheme_right {
+  width: 60px;
+  height: 100%;
+  display: inline-block;
+}
+.setTheme > li.setTheme_color:after {
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  top: -5px;
+  left: -5px;
+  border-color: #166d65;
+  opacity: 1;
+}
+.setTheme > li:hover:after,
+.setTheme > li.setTheme_color:after {
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  top: -5px;
+  left: -5px;
+  border-color: #5fb878;
+  opacity: 1;
+}
+.setTheme > li:after {
+  content: "";
+  position: absolute;
+  z-index: 20;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 0;
+  border: 1px solid #f2f2f2;
+  transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+  opacity: 0;
+}
+.setTheme_left > div:nth-child(1) {
+  width: 100%;
+  height: 10px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+}
+.setTheme_left > div:nth-child(2) {
+  width: 100%;
+  height: calc(100% - 10px);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+}
+.setTheme_right > div {
+  width: 100%;
+  height: 10px;
+  border-top: 1px solid #f2f2f2;
+  border-right: 1px solid #f2f2f2;
+}
+.setTheme > li:nth-child(3n-1) {
+  margin: 0 12px 12px;
 }
 </style>
