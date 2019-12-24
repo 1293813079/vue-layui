@@ -227,7 +227,7 @@ export default {
       timer: true,
       showView: true,
       theme_color: false,
-      // 导航栏 end
+      // 导航栏 end 
       // 侧边栏
       flexibles: false,
       three_index: 0,
