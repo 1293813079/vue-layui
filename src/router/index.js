@@ -9,6 +9,10 @@ export default new Router({
       redirect:'/index'
     },
     {
+      path:'/sigin',
+      component:()=>import('../components/login/sigin.vue'),
+    },
+    {
       path:'/index',
       component:()=>import('../components/index.vue'),
       redirect:'/index/control',
